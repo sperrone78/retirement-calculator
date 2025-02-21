@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Retirement Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <h1>Advanced Retirement Calculator</h1>
+            <button id="darkModeToggle" class="dark-mode-toggle">
+                <i class="fas fa-sun"></i>
+            </button>
+        </div>
+        
+        <div class="calculator-container">
+            <div class="input-section">
+                <div class="tab-container">
+                    <button class="tab-button active" onclick="showTab('personal')">Personal Info</button>
+                    <button class="tab-button" onclick="showTab('investments')">Investments</button>
+                    <button class="tab-button" onclick="showTab('retirement')">Retirement</button>
+                    <button class="tab-button" onclick="showTab('tax')">Tax Info</button>
+                    <button class="tab-button" onclick="showTab('analysis')">AI Analysis</button>
+                </div>
+
+                <div id="personal" class="tab-content active">
+                    <h2>Personal Information</h2>
+                    <div class="input-group">
+                        <label for="currentAge">Current Age:</label>
+                        <input type="number" id="currentAge" value="30">
+                    </div>
+                    <div class="input-group">
+                        <label for="retirementAge">Retirement Age:</label>
+                        <input type="number" id="retirementAge" value="65">
+                    </div>
+                    <div class="input-group">
+                        <label for="lifeExpectancy">Life Expectancy:</label>
+                        <input type="number" id="lifeExpectancy" value="90">
+                    </div>
+                    <div class="input-group">
+                        <label for="currentSalary">Current Annual Salary ($):</label>
+                        <input type="number" id="currentSalary" value="75000">
+                    </div>
+                    <div class="input-group">
+                        <label for="salaryIncrease">Expected Annual Salary Increase (%):</label>
+                        <input type="number" id="salaryIncrease" value="2" step="0.1">
+                    </div>
+                </div>
+
+                <div id="investments" class="tab-content">
+                    <h2>Investment Information</h2>
+                    
+                    <h3>Current Account Balances</h3>
+                    <div class="input-group">
+                        <label for="traditional401k">Traditional 401(k) Balance ($):</label>
+                        <input type="number" id="traditional401k" value="30000">
+                    </div>
+                    <div class="input-group">
+                        <label for="roth401k">Roth 401(k) Balance ($):</label>
+                        <input type="number" id="roth401k" value="10000">
+                    </div>
+                    <div class="input-group">
+                        <label for="traditionalIRA">Traditional IRA Balance ($):</label>
+                        <input type="number" id="traditionalIRA" value="5000">
+                    </div>
+                    <div class="input-group">
+                        <label for="rothIRA">Roth IRA Balance ($):</label>
+                        <input type="number" id="rothIRA" value="5000">
+                    </div>
+                    <div class="input-group">
+                        <label for="currentSavings">Non-Retirement Savings ($):</label>
+                        <input type="number" id="currentSavings" value="50000">
+                    </div>
+                    
+                    <h3>Annual Contributions</h3>
+                    <div class="input-group">
+                        <label for="traditional401kContrib">Traditional 401(k) Contribution ($):</label>
+                        <input type="number" id="traditional401kContrib" value="6000">
+                    </div>
+                    <div class="input-group">
+                        <label for="roth401kContrib">Roth 401(k) Contribution ($):</label>
+                        <input type="number" id="roth401kContrib" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="employerMatchLimit">Employer Match Up To ($):</label>
+                        <input type="number" id="employerMatchLimit" value="3000">
+                    </div>
+                    <div class="input-group">
+                        <label for="iraContrib">Annual IRA Contribution ($):</label>
+                        <input type="number" id="iraContrib" value="2000">
+                    </div>
+                    <div class="input-group">
+                        <label for="annualSavings">Non-Retirement Annual Savings ($):</label>
+                        <input type="number" id="annualSavings" value="10000">
+                    </div>
+                    
+                    <h3>Investment Allocation</h3>
+                    <div class="input-group">
+                        <label for="stockAllocation">Stocks (%):</label>
+                        <input type="number" id="stockAllocation" value="70" max="100" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="bondAllocation">Bonds (%):</label>
+                        <input type="number" id="bondAllocation" value="30" max="100" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="stockReturn">Expected Stock Return (%):</label>
+                        <input type="number" id="stockReturn" value="8" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="bondReturn">Expected Bond Return (%):</label>
+                        <input type="number" id="bondReturn" value="3" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="inflationRate">Inflation Rate (%):</label>
+                        <input type="number" id="inflationRate" value="2.5" step="0.1">
+                    </div>
+                </div>
+
+                <div id="retirement" class="tab-content">
+                    <h2>Retirement Income</h2>
+                    <div class="input-group">
+                        <label for="desiredIncome">Desired Annual Income ($):</label>
+                        <input type="number" id="desiredIncome" value="60000">
+                    </div>
+                    
+                    <h3>Social Security</h3>
+                    <div class="input-group">
+                        <label for="ssBenefitAge">Benefit Start Age:</label>
+                        <input type="number" id="ssBenefitAge" value="67">
+                    </div>
+                    <div class="input-group">
+                        <label for="ssMonthlyBenefit">Monthly Benefit at Full Retirement Age ($):</label>
+                        <input type="number" id="ssMonthlyBenefit" value="2000">
+                    </div>
+                    
+                    <h3>Pension</h3>
+                    <div class="input-group">
+                        <label for="pensionAge">Pension Start Age:</label>
+                        <input type="number" id="pensionAge" value="65">
+                    </div>
+                    <div class="input-group">
+                        <label for="pensionAmount">Monthly Pension ($):</label>
+                        <input type="number" id="pensionAmount" value="0">
+                    </div>
+                </div>
+
+                <div id="tax" class="tab-content">
+                    <h2>Tax Information</h2>
+                    <div class="tax-estimate">
+                        <p>Estimated current tax bracket based on salary: <span id="estimatedCurrentTax">-</span>%</p>
+                        <p>Estimated retirement tax bracket based on desired income: <span id="estimatedRetirementTax">-</span>%</p>
+                    </div>
+                    <div class="input-group">
+                        <label for="taxBracket">Override Current Tax Bracket (%):</label>
+                        <input type="number" id="taxBracket">
+                    </div>
+                    <div class="input-group">
+                        <label for="retirementTaxBracket">Override Retirement Tax Bracket (%):</label>
+                        <input type="number" id="retirementTaxBracket">
+                    </div>
+                    
+                    <div class="tax-info">
+                        <h3>2024 Tax Brackets (Married Filing Jointly)</h3>
+                        <table>
+                            <tr><th>Income Range</th><th>Tax Rate</th></tr>
+                            <tr><td>$0 - $23,200</td><td>10%</td></tr>
+                            <tr><td>$23,201 - $94,300</td><td>12%</td></tr>
+                            <tr><td>$94,301 - $201,050</td><td>22%</td></tr>
+                            <tr><td>$201,051 - $383,900</td><td>24%</td></tr>
+                            <tr><td>$383,901 - $487,450</td><td>32%</td></tr>
+                            <tr><td>$487,451 - $731,200</td><td>35%</td></tr>
+                            <tr><td>$731,201+</td><td>37%</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="analysis" class="tab-content">
+                    <h2>AI Analysis</h2>
+                    <div class="analysis-container">
+                        <div class="analysis-header">
+                            <button onclick="getAIAnalysis()" class="analyze-button">
+                                <i class="fas fa-robot"></i> Get AI Analysis
+                            </button>
+                            <div id="analysisLoading" class="loading-spinner hidden">
+                                <i class="fas fa-spinner fa-spin"></i> Analyzing...
+                            </div>
+                        </div>
+                        <div id="analysisResults" class="analysis-results">
+                            <div class="insight-cards"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button onclick="calculateRetirement()">Calculate</button>
+                    <button onclick="saveScenario()">Save Scenario</button>
+                    <button onclick="exportResults()">Export Results</button>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="summary-stats">
+                    <div class="stat-box">
+                        <h3>Retirement Readiness</h3>
+                        <p id="readinessScore">-</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Portfolio at Retirement</h3>
+                        <p id="retirementPortfolio">-</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Monthly Income in Retirement</h3>
+                        <p id="monthlyIncome">-</p>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="networthChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="incomeChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="withdrawalChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="savedScenarios" class="scenarios-section">
+            <h2>Saved Scenarios</h2>
+            <div id="scenariosList"></div>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html> 
