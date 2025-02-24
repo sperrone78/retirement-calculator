@@ -519,4 +519,9 @@ body.dark-mode .insight-card.error {
 
 body.dark-mode .input-error {
     background-color: #3a2c2c !important;
+}
+
+/* Add or update this class definition */
+.hidden {
+    display: none !important;
 } 

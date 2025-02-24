@@ -547,7 +547,11 @@ async function getAIAnalysis() {
     const resultsContainer = document.querySelector('.insight-cards');
     const actionsContainer = document.querySelector('.analysis-actions');
     
-    loading.classList.remove('hidden');
+    // Show loading spinner - first remove the hidden class
+    loading.classList.remove('hidden');  
+    // Then set display style
+    loading.style.display = 'flex';      
+    
     resultsContainer.innerHTML = '';
     actionsContainer.classList.add('hidden');
     
@@ -579,6 +583,10 @@ async function getAIAnalysis() {
             - Desired Annual Income: $${inputs.desiredIncome.toLocaleString()}
             - Life Expectancy: ${inputs.lifeExpectancy}
             
+            Social Security & Pension:
+            - Social Security: $${inputs.ssMonthlyBenefit} monthly starting at age ${inputs.ssBenefitAge}
+            - Pension: $${inputs.pensionAmount} monthly starting at age ${inputs.pensionAge}
+            
             Investment Details:
             - Stock/Bond Allocation: ${document.getElementById('stockAllocation').value}%/${document.getElementById('bondAllocation').value}%
             - Expected Returns: Stocks ${document.getElementById('stockReturn').value}%, Bonds ${document.getElementById('bondReturn').value}%
@@ -592,7 +600,8 @@ async function getAIAnalysis() {
             1. Savings rate and retirement readiness
             2. Investment allocation and risk
             3. Tax optimization
-            4. Any red flags or opportunities
+            4. Social Security and pension optimization
+            5. Any red flags or opportunities
 
             Format each insight with a clear title line followed by the details.
             Separate insights with blank lines.
@@ -681,7 +690,9 @@ async function getAIAnalysis() {
             </div>
         `;
     } finally {
+        // Hide loading spinner
         loading.classList.add('hidden');
+        loading.style.display = 'none';
     }
 }
 
