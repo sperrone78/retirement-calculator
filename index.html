@@ -180,18 +180,58 @@
                 </div>
 
                 <div id="analysis" class="tab-content">
-                    <h2>AI Analysis</h2>
+                    <h2>AI Retirement Analysis</h2>
                     <div class="analysis-container">
-                        <div class="analysis-header">
-                            <button onclick="getAIAnalysis()" class="analyze-button">
-                                <i class="fas fa-robot"></i> Get AI Analysis
+                        <div class="analysis-intro">
+                            <p>Get personalized insights about your retirement plan from our AI assistant. The analysis will evaluate your savings rate, investment strategy, tax optimization, and identify potential opportunities.</p>
+                        </div>
+                        
+                        <div class="analysis-options">
+                            <button onclick="getAIAnalysis()" class="analyze-button primary-button">
+                                <i class="fas fa-robot"></i> Analyze My Retirement Plan
                             </button>
-                            <div id="analysisLoading" class="loading-spinner hidden">
-                                <i class="fas fa-spinner fa-spin"></i> Analyzing...
+                            
+                            <div class="analysis-help">
+                                <details>
+                                    <summary><i class="fas fa-question-circle"></i> About AI Analysis</summary>
+                                    <div class="help-content">
+                                        <p>Our AI analysis uses your input data to provide personalized retirement planning insights. The analysis includes:</p>
+                                        <ul>
+                                            <li>Savings rate assessment</li>
+                                            <li>Investment allocation recommendations</li>
+                                            <li>Tax optimization strategies</li>
+                                            <li>Risk evaluation</li>
+                                        </ul>
+                                        <p><strong>Note:</strong> This analysis is for informational purposes only and does not constitute financial advice.</p>
+                                    </div>
+                                </details>
                             </div>
                         </div>
+                        
+                        <div id="analysisLoading" class="loading-container hidden">
+                            <div class="loading-spinner">
+                                <div class="spinner-border"></div>
+                            </div>
+                            <p>Analyzing your retirement plan...</p>
+                        </div>
+                        
                         <div id="analysisResults" class="analysis-results">
+                            <div class="insight-categories">
+                                <div class="category-tabs">
+                                    <button class="category-tab active" data-category="all">All Insights</button>
+                                    <button class="category-tab" data-category="savings">Savings</button>
+                                    <button class="category-tab" data-category="investment">Investments</button>
+                                    <button class="category-tab" data-category="tax">Tax</button>
+                                    <button class="category-tab" data-category="risk">Risk</button>
+                                </div>
+                            </div>
                             <div class="insight-cards"></div>
+                            
+                            <div class="analysis-actions hidden">
+                                <button onclick="exportAnalysis()" class="secondary-button">
+                                    <i class="fas fa-file-export"></i> Export Analysis
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

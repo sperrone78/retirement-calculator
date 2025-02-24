@@ -3,7 +3,65 @@ let networthChart = null;
 let incomeChart = null;
 let withdrawalChart = null;
 
+function validateInputs() {
+    const inputs = document.querySelectorAll('input[type="number"]');
+    let isValid = true;
+    
+    inputs.forEach(input => {
+        // Remove any previous error styling
+        input.classList.remove('input-error');
+        
+        const value = Number(input.value);
+        
+        // Check if input is empty or not a number
+        if (input.value === '' || isNaN(value)) {
+            input.classList.add('input-error');
+            isValid = false;
+            return;
+        }
+        
+        // Check for negative values where inappropriate
+        if (value < 0 && !input.classList.contains('allow-negative')) {
+            input.classList.add('input-error');
+            isValid = false;
+            return;
+        }
+        
+        // Specific validations
+        if (input.id === 'retirementAge' && value <= Number(document.getElementById('currentAge').value)) {
+            input.classList.add('input-error');
+            isValid = false;
+        }
+        
+        if (input.id === 'lifeExpectancy' && value <= Number(document.getElementById('retirementAge').value)) {
+            input.classList.add('input-error');
+            isValid = false;
+        }
+        
+        // Validate allocation percentages sum to 100%
+        if (input.id === 'stockAllocation' || input.id === 'bondAllocation') {
+            const stockAllocation = Number(document.getElementById('stockAllocation').value);
+            const bondAllocation = Number(document.getElementById('bondAllocation').value);
+            
+            if (stockAllocation + bondAllocation !== 100) {
+                document.getElementById('stockAllocation').classList.add('input-error');
+                document.getElementById('bondAllocation').classList.add('input-error');
+                isValid = false;
+            }
+        }
+    });
+    
+    return isValid;
+}
+
 function calculateRetirement() {
+    // Validate inputs before calculating
+    if (!validateInputs()) {
+        // Show error message
+        alert('Please correct the highlighted input errors before calculating.');
+        return;
+    }
+    
     const inputs = getInputs();
     const years = [];
     const networthData = [];
@@ -104,12 +162,6 @@ function calculateRetirement() {
 }
 
 function updateCharts(years, networthData, incomeData, withdrawalData) {
-    // Destroy existing charts
-    if (networthChart) networthChart.destroy();
-    if (incomeChart) incomeChart.destroy();
-    if (withdrawalChart) withdrawalChart.destroy();
-
-    // Get theme colors
     const isDarkMode = document.body.classList.contains('dark-mode');
     const textColor = isDarkMode ? '#ffffff' : '#666666';
     const gridColor = isDarkMode ? '#4d4d4d' : '#ddd';
@@ -150,50 +202,73 @@ function updateCharts(years, networthData, incomeData, withdrawalData) {
         }
     };
 
-    // Create Networth Chart
-    networthChart = new Chart(document.getElementById('networthChart'), {
-        type: 'line',
-        data: {
-            labels: years,
-            datasets: [{
-                label: 'Net Worth',
-                data: networthData,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }]
-        },
-        options: chartOptions
-    });
+    // If charts already exist, update them instead of destroying and recreating
+    if (networthChart) {
+        networthChart.data.labels = years;
+        networthChart.data.datasets[0].data = networthData;
+        networthChart.options = chartOptions;
+        networthChart.update();
+    } else {
+        // Create Networth Chart
+        networthChart = new Chart(document.getElementById('networthChart'), {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [{
+                    label: 'Net Worth',
+                    data: networthData,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: chartOptions
+        });
+    }
 
-    // Create Income Chart
-    incomeChart = new Chart(document.getElementById('incomeChart'), {
-        type: 'line',
-        data: {
-            labels: years,
-            datasets: [{
-                label: 'Annual Income',
-                data: incomeData,
-                borderColor: 'rgb(153, 102, 255)',
-                tension: 0.1
-            }]
-        },
-        options: chartOptions
-    });
+    // Similar approach for other charts
+    if (incomeChart) {
+        incomeChart.data.labels = years;
+        incomeChart.data.datasets[0].data = incomeData;
+        incomeChart.options = chartOptions;
+        incomeChart.update();
+    } else {
+        // Create Income Chart
+        incomeChart = new Chart(document.getElementById('incomeChart'), {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [{
+                    label: 'Annual Income',
+                    data: incomeData,
+                    borderColor: 'rgb(153, 102, 255)',
+                    tension: 0.1
+                }]
+            },
+            options: chartOptions
+        });
+    }
 
-    // Create Withdrawal Chart
-    withdrawalChart = new Chart(document.getElementById('withdrawalChart'), {
-        type: 'line',
-        data: {
-            labels: years,
-            datasets: [{
-                label: 'Annual Withdrawals',
-                data: withdrawalData,
-                borderColor: 'rgb(255, 99, 132)',
-                tension: 0.1
-            }]
-        },
-        options: chartOptions
-    });
+    if (withdrawalChart) {
+        withdrawalChart.data.labels = years;
+        withdrawalChart.data.datasets[0].data = withdrawalData;
+        withdrawalChart.options = chartOptions;
+        withdrawalChart.update();
+    } else {
+        // Create Withdrawal Chart
+        withdrawalChart = new Chart(document.getElementById('withdrawalChart'), {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [{
+                    label: 'Annual Withdrawals',
+                    data: withdrawalData,
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                }]
+            },
+            options: chartOptions
+        });
+    }
 }
 
 function updateSummaryStats(networthData, incomeData, inputs) {
@@ -449,19 +524,40 @@ function updateTaxEstimates() {
     }
 }
 
+// Add this function to categorize insights
+function categorizeInsight(title) {
+    const lowerTitle = title.toLowerCase();
+    
+    if (lowerTitle.includes('savings') || lowerTitle.includes('contribution') || lowerTitle.includes('income')) {
+        return 'savings';
+    } else if (lowerTitle.includes('investment') || lowerTitle.includes('allocation') || lowerTitle.includes('return')) {
+        return 'investment';
+    } else if (lowerTitle.includes('tax')) {
+        return 'tax';
+    } else if (lowerTitle.includes('risk') || lowerTitle.includes('warning')) {
+        return 'risk';
+    }
+    
+    return 'other';
+}
+
+// Enhanced AI Analysis function
 async function getAIAnalysis() {
     const loading = document.getElementById('analysisLoading');
     const resultsContainer = document.querySelector('.insight-cards');
+    const actionsContainer = document.querySelector('.analysis-actions');
     
     loading.classList.remove('hidden');
     resultsContainer.innerHTML = '';
+    actionsContainer.classList.add('hidden');
     
     try {
         // First check if Ollama is running
-        const checkResponse = await fetch('/ollama/api/tags')
-            .catch(error => {
-                throw new Error('Cannot connect to Ollama. Is it running?');
-            });
+        const checkResponse = await fetch('/ollama/api/tags', { 
+            signal: AbortSignal.timeout(5000) // 5 second timeout
+        }).catch(error => {
+            throw new Error('Cannot connect to Ollama. Is it running?');
+        });
 
         if (!checkResponse.ok) {
             throw new Error('Ollama service is not responding correctly');
@@ -471,7 +567,7 @@ async function getAIAnalysis() {
         
         // Prepare the analysis prompt
         const prompt = `
-            Please analyze this retirement scenario and provide 3-4 key insights and suggestions:
+            Please analyze this retirement scenario and provide 4-5 key insights and suggestions:
             
             Current Situation:
             - Age: ${inputs.currentAge}
@@ -484,8 +580,8 @@ async function getAIAnalysis() {
             - Life Expectancy: ${inputs.lifeExpectancy}
             
             Investment Details:
-            - Stock/Bond Allocation: ${inputs.stockAllocation}/${inputs.bondAllocation}
-            - Expected Returns: Stocks ${inputs.stockReturn}%, Bonds ${inputs.bondReturn}%
+            - Stock/Bond Allocation: ${document.getElementById('stockAllocation').value}%/${document.getElementById('bondAllocation').value}%
+            - Expected Returns: Stocks ${document.getElementById('stockReturn').value}%, Bonds ${document.getElementById('bondReturn').value}%
             - Annual Contributions: 
               * Traditional 401(k): $${inputs.traditional401kContrib}
               * Roth 401(k): $${inputs.roth401kContrib}
@@ -511,7 +607,8 @@ async function getAIAnalysis() {
                 model: "deepseek-r1:7b",
                 prompt: prompt,
                 stream: false
-            })
+            }),
+            signal: AbortSignal.timeout(60000) // 60 second timeout
         });
 
         if (!response.ok) {
@@ -526,31 +623,53 @@ async function getAIAnalysis() {
         const analysis = data.response;
 
         // Parse the analysis into sections and create insight cards
-        const insights = analysis.split('\n\n').map(section => {
+        const insights = analysis.split('\n\n').filter(section => section.trim());
+        
+        // Map for insights by category
+        const insightsByCategory = {};
+        
+        insights.forEach(section => {
             const [title, ...content] = section.split('\n');
-            return {
-                title: title.replace(/^[- ]*/, ''),  // Remove leading dashes or spaces
-                icon: getIconForTitle(title),
-                content: content.join('\n')
-            };
+            const cleanTitle = title.replace(/^[- ]*/, '');  // Remove leading dashes or spaces
+            const category = categorizeInsight(cleanTitle);
+            const icon = getIconForTitle(cleanTitle);
+            
+            // Group by category
+            if (!insightsByCategory[category]) {
+                insightsByCategory[category] = [];
+            }
+            
+            insightsByCategory[category].push({
+                title: cleanTitle,
+                icon: icon,
+                content: content.join('\n'),
+                category: category
+            });
         });
-
-        // Display insights
-        insights.forEach(insight => {
+        
+        // Display all insights
+        Object.values(insightsByCategory).flat().forEach(insight => {
             const card = document.createElement('div');
-            card.className = 'insight-card';
+            card.className = `insight-card ${insight.category}`;
+            card.dataset.category = insight.category;
             card.innerHTML = `
                 <h3><i class="fas ${insight.icon}"></i> ${insight.title}</h3>
                 <p>${insight.content}</p>
             `;
             resultsContainer.appendChild(card);
         });
+        
+        // Setup category filtering
+        setupCategoryTabs();
+        
+        // Show export button
+        actionsContainer.classList.remove('hidden');
 
     } catch (error) {
         console.error('AI Analysis Error:', error);
         resultsContainer.innerHTML = `
             <div class="insight-card error">
-                <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
+                <h3><i class="fas fa-exclamation-triangle"></i> Connection Error</h3>
                 <p>${error.message}</p>
                 <p>Troubleshooting steps:</p>
                 <ul>
@@ -564,6 +683,70 @@ async function getAIAnalysis() {
     } finally {
         loading.classList.add('hidden');
     }
+}
+
+function setupCategoryTabs() {
+    const tabs = document.querySelectorAll('.category-tab');
+    const cards = document.querySelectorAll('.insight-card');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            tab.classList.add('active');
+            
+            const category = tab.dataset.category;
+            
+            // Show/hide cards based on category
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+}
+
+function exportAnalysis() {
+    const insights = [];
+    document.querySelectorAll('.insight-card').forEach(card => {
+        if (card.style.display !== 'none' && !card.classList.contains('error')) {
+            const title = card.querySelector('h3').textContent;
+            const content = card.querySelector('p').textContent;
+            insights.push({ title, content });
+        }
+    });
+    
+    if (insights.length === 0) {
+        alert('No analysis results to export.');
+        return;
+    }
+    
+    const inputs = getInputs();
+    
+    const exportData = {
+        date: new Date().toLocaleDateString(),
+        retirementPlan: {
+            currentAge: inputs.currentAge,
+            retirementAge: inputs.retirementAge,
+            currentSalary: inputs.currentSalary,
+            desiredIncome: inputs.desiredIncome,
+            totalSavings: inputs.currentSavings + inputs.traditional401k + inputs.roth401k + inputs.traditionalIRA + inputs.rothIRA
+        },
+        insights: insights
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `retirement-analysis-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
 function getIconForTitle(title) {
@@ -583,6 +766,19 @@ function getIconForTitle(title) {
     }
     return 'fa-chart-line'; // default icon
 }
+
+// Replace multiple event listeners with event delegation
+document.querySelector('.input-section').addEventListener('change', function(e) {
+    if (e.target.tagName === 'INPUT') {
+        // For tax-specific inputs, update tax estimates
+        if (e.target.id === 'currentSalary' || e.target.id === 'desiredIncome') {
+            updateTaxEstimates();
+        }
+        
+        // Recalculate for any input change
+        calculateRetirement();
+    }
+});
 
 // Add event listener for calculate button
 document.addEventListener('DOMContentLoaded', () => {
@@ -640,6 +836,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Redraw charts with new theme colors
+        calculateRetirement();
+    });
+
+    // Setup allocation inputs to ensure they total 100%
+    const stockAllocation = document.getElementById('stockAllocation');
+    const bondAllocation = document.getElementById('bondAllocation');
+    
+    stockAllocation.addEventListener('change', function() {
+        bondAllocation.value = 100 - Number(this.value);
+        calculateRetirement();
+    });
+    
+    bondAllocation.addEventListener('change', function() {
+        stockAllocation.value = 100 - Number(this.value);
         calculateRetirement();
     });
 });
